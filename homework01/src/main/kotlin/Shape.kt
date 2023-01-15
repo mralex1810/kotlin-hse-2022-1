@@ -22,8 +22,9 @@ class DefaultShape(vararg dimensions: Int) : DefaultDimensionAware(dimensions), 
         }
     }
 
-    override val size: Int
-        get() = dimensions.reduce { acc, it -> acc * it }
+    override val size: Int by lazy {
+        dimensions.reduce { acc, it -> acc * it }
+    }
 }
 
 sealed class ShapeArgumentException(reason: String = "") : IllegalArgumentException(reason) {

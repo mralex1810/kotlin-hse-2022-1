@@ -84,16 +84,15 @@ interface NDArray : SizeAware, DimensionAware {
  */
 class DefaultNDArray private constructor(private val array: IntArray, private val shape: Shape) : NDArray {
 
-    val folded: IntArray
-        get() {
-            val folded = IntArray(shape.ndim)
-            var acc = 1
-            for (i in shape.ndim - 1 downTo 0) {
-                folded[i] = acc
-                acc *= shape.dim(i)
-            }
-            return folded
+    private val folded: IntArray by lazy {
+        val folded = IntArray(shape.ndim)
+        var acc = 1
+        for (i in shape.ndim - 1 downTo 0) {
+            folded[i] = acc
+            acc *= shape.dim(i)
         }
+        folded
+    }
 
     private fun checkPoint(point: Point) {
         if (point.ndim != shape.ndim) throw NDArrayException.IllegalPointDimensionException(point.ndim, shape.ndim)
