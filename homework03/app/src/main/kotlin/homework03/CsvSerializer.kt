@@ -1,3 +1,5 @@
+package homework03
+
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 
@@ -6,7 +8,6 @@ object CsvSerializer {
 
     private fun <T : Any> StringBuilder.serializeObject(data: Iterable<T>, klass: KClass<T>) {
         serializeHeader(klass)
-        append("\n")
 
         if (data.any {
                 it.javaClass.kotlin != klass
@@ -14,7 +15,6 @@ object CsvSerializer {
 
         data.forEach {
             serializeObject(it)
-            append("\n")
         }
     }
 
@@ -23,8 +23,7 @@ object CsvSerializer {
     }
 
     private fun StringBuilder.serializeValue(value: Any) = apply {
-        val kClass = value.javaClass.kotlin
-        when (kClass) {
+        when (value.javaClass.kotlin) {
             String::class -> {
                 serializeString(value as String)
             }
@@ -42,7 +41,6 @@ object CsvSerializer {
     }
 
     private fun <T : Any> StringBuilder.serializeHeader(klass: KClass<T>) = apply {
-        append("")
         val properties = klass.memberProperties
 
         when (klass) {
@@ -57,6 +55,7 @@ object CsvSerializer {
                 }
             }
         }
+        append("\n")
     }
 
     private fun StringBuilder.serializeObject(value: Any) {
@@ -75,5 +74,6 @@ object CsvSerializer {
                 }
             }
         }
+        append("\n")
     }
 }
