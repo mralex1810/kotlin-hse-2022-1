@@ -77,9 +77,18 @@ sealed class FList<T> : Iterable<T> {
 
         override fun <U> map(f: (T) -> U): FList<U> = Cons(f(head), tail.map(f))
 
-        override fun filter(f: (T) -> Boolean): FList<T> = if (f(head)) Cons(head, tail.filter(f)) else tail.filter(f)
+        private tailrec fun recurFilter(current: FList<T>, iterator: Iterator<T>, f: (T) -> Boolean): FList<T> {
+            if (!iterator.hasNext()) return current
+            val next = iterator.next()
+            return if (f(next)) recurFilter(Cons(next, current), iterator, f)
+            else recurFilter(current, iterator, f)
+        }
+        override fun filter(f: (T) -> Boolean): FList<T> = recurFilter(nil(), iterator(), f)
 
-        override fun <U> fold(base: U, f: (U, T) -> U): U = tail.fold(f(base, head), f)
+        private tailrec fun <U> recurFold(base: U, iterator: Iterator<T>, f: (U, T) -> U): U = if (!iterator.hasNext()) base
+        else recurFold(f(base, iterator.next()), iterator, f)
+
+        override fun <U> fold(base: U, f: (U, T) -> U): U = recurFold(base, iterator(), f)
     }
 
     data class FListIterator<T>(var list: FList<T>) : Iterator<T> {
@@ -103,6 +112,6 @@ sealed class FList<T> : Iterable<T> {
 // требуемая сложность - O(n)
 fun <T> flistOf(vararg values: T): FList<T> = flistOf(values, values.size - 1, FList.nil())
 
-internal fun <T> flistOf(values: Array<out T>, index: Int, next: FList<T>): FList<T> =
+internal tailrec fun <T> flistOf(values: Array<out T>, index: Int, next: FList<T>): FList<T> =
     if (index == -1) next else flistOf(values, index - 1, FList.Cons(values[index], next))
 
