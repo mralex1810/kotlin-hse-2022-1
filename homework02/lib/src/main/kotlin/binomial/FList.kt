@@ -83,10 +83,12 @@ sealed class FList<T> : Iterable<T> {
             return if (f(next)) recurFilter(Cons(next, current), iterator, f)
             else recurFilter(current, iterator, f)
         }
+
         override fun filter(f: (T) -> Boolean): FList<T> = recurFilter(nil(), iterator(), f)
 
-        private tailrec fun <U> recurFold(base: U, iterator: Iterator<T>, f: (U, T) -> U): U = if (!iterator.hasNext()) base
-        else recurFold(f(base, iterator.next()), iterator, f)
+        private tailrec fun <U> recurFold(base: U, iterator: Iterator<T>, f: (U, T) -> U): U =
+            if (!iterator.hasNext()) base
+            else recurFold(f(base, iterator.next()), iterator, f)
 
         override fun <U> fold(base: U, f: (U, T) -> U): U = recurFold(base, iterator(), f)
     }
@@ -94,9 +96,12 @@ sealed class FList<T> : Iterable<T> {
     data class FListIterator<T>(var list: FList<T>) : Iterator<T> {
         override fun hasNext(): Boolean = !list.isEmpty
         override fun next(): T {
-            val res = (list as Cons).head
-            list = (list as Cons).tail
-            return res
+            if (hasNext()) {
+                val res = (list as Cons).head
+                list = (list as Cons).tail
+                return res
+            }
+            throw NoSuchElementException("FList hasn't next element")
         }
     }
 
