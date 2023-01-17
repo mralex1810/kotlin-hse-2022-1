@@ -75,7 +75,7 @@ sealed class FList<T> : Iterable<T> {
             if (!iterator.hasNext()) current
             else recurMap(Cons(f(iterator.next()), current), iterator, f)
 
-        override fun <U> map(f: (T) -> U): FList<U> = recurMap(nil(), iterator(), f)
+        override fun <U> map(f: (T) -> U): FList<U> = recurMap(nil(), iterator(), f).reverse()
 
         private tailrec fun recurFilter(current: FList<T>, iterator: Iterator<T>, f: (T) -> Boolean): FList<T> {
             if (!iterator.hasNext()) return current
@@ -84,7 +84,7 @@ sealed class FList<T> : Iterable<T> {
             else recurFilter(current, iterator, f)
         }
 
-        override fun filter(f: (T) -> Boolean): FList<T> = recurFilter(nil(), iterator(), f)
+        override fun filter(f: (T) -> Boolean): FList<T> = recurFilter(nil(), iterator(), f).reverse()
 
         private tailrec fun <U> recurFold(base: U, iterator: Iterator<T>, f: (U, T) -> U): U =
             if (!iterator.hasNext()) base
