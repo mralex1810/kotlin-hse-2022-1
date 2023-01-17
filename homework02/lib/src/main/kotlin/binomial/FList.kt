@@ -71,7 +71,11 @@ sealed class FList<T> : Iterable<T> {
         override val size = 1 + tail.size
         override val isEmpty = false
 
-        override fun <U> map(f: (T) -> U): FList<U> = Cons(f(head), tail.map(f))
+        private tailrec fun <U> recurMap(current: FList<U>, iterator: Iterator<T>, f: (T) -> U): FList<U> =
+            if (!iterator.hasNext()) current
+            else recurMap(Cons(f(iterator.next()), current), iterator, f)
+
+        override fun <U> map(f: (T) -> U): FList<U> = recurMap(nil(), iterator(), f)
 
         private tailrec fun recurFilter(current: FList<T>, iterator: Iterator<T>, f: (T) -> Boolean): FList<T> {
             if (!iterator.hasNext()) return current
