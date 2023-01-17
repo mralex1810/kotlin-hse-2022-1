@@ -57,10 +57,8 @@ sealed class FList<T> : Iterable<T> {
      * Также для борьбы с бойлерплейтом были введены функция и свойство nil в компаньоне
      */
     data class Nil<T>(private val dummy: Int = 0) : FList<T>() {
-        override val size: Int
-            get() = 0
-        override val isEmpty: Boolean
-            get() = true
+        override val size = 0
+        override val isEmpty = true
 
         override fun <U> map(f: (T) -> U): FList<U> = nil()
 
@@ -70,10 +68,8 @@ sealed class FList<T> : Iterable<T> {
     }
 
     data class Cons<T>(val head: T, val tail: FList<T>) : FList<T>() {
-        override val size: Int
-            get() = 1 + tail.size
-        override val isEmpty: Boolean
-            get() = false
+        override val size = 1 + tail.size
+        override val isEmpty = false
 
         override fun <U> map(f: (T) -> U): FList<U> = Cons(f(head), tail.map(f))
 

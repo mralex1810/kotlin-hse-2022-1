@@ -37,12 +37,16 @@ class BinomialHeap<T : Comparable<T>> private constructor(private val trees: FLi
     override fun plus(other: BinomialHeap<T>): BinomialHeap<T> = BinomialHeap(this.trees.merge(other.trees))
 
     private fun FList<BinomialTree<T>>.merge(other: FList<BinomialTree<T>>): FList<BinomialTree<T>> {
-        return if (isEmpty && other.isEmpty) FList.nil()
-        else if (isEmpty && !other.isEmpty || !isEmpty && !other.isEmpty && first().order > other.first().order)
-            other.merge(this)
-        else if (!isEmpty && other.isEmpty || !isEmpty && !other.isEmpty && first().order < other.first().order)
-            FList.Cons(first(), (this as FList.Cons).tail.merge(other))
-        else compress(first() + other.first(), (this as FList.Cons).tail.merge((other as FList.Cons).tail))
+        return when {
+            isEmpty && other.isEmpty -> FList.nil()
+            isEmpty && !other.isEmpty || !isEmpty && !other.isEmpty && first().order > other.first().order ->
+                other.merge(this)
+
+            !isEmpty && other.isEmpty || !isEmpty && !other.isEmpty && first().order < other.first().order ->
+                FList.Cons(first(), (this as FList.Cons).tail.merge(other))
+
+            else -> compress(first() + other.first(), (this as FList.Cons).tail.merge((other as FList.Cons).tail))
+        }
     }
 
     private fun compress(head: BinomialTree<T>, tail: FList<BinomialTree<T>>): FList<BinomialTree<T>> {
